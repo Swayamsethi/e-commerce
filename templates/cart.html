@@ -27,14 +27,22 @@
             <tr>
                 <td>{{ item.product.name }}</td>
                 <td>{{ item.product.price }}</td>
-                <td>{{ item.quantity}}</td>
-
+    
+                <td>
+                    <input type="number" 
+                           name="quantity_{{ item.id }}" 
+                           value="{{ item.quantity }}" 
+                           min="1" 
+                           step="1"
+                           {% if item.required_items %}checked{% endif %}>
+                </td>
                 <td>
                     <input type="checkbox" 
                            name="required_items" 
-                           {% if item.required_items %}checked{% endif %} 
-                          >
+                           value="{{ item.id }}" 
+                           {% if item.required_items %}checked{% endif %}>
                 </td>
+
                 <td><form method="POST" action="{% url 'removeitem' item.id %}">
                     {% csrf_token %}
                     <button type="submit" class="delete">-</button>
@@ -44,6 +52,7 @@
             {% endfor %}
         </tbody>
     </table>
+    <button type="submit">Update Cart</button>
     <a href="{% url 'home' %}">Add Product</a>
     {% comment %} <a href="{% url 'order' %}">Place Order</a> {% endcomment %}
 </body>

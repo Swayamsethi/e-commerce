@@ -59,7 +59,6 @@ def UserProfile(request):
         first_name = request.POST.get('firstName')
         last_name = request.POST.get('lastName')
         email = request.POST.get('email')
-        # password = request.POST.get('password')
         gender = request.POST.get('gender')
         profile_pic = request.FILES.get('profile_pic')
         postal_code = request.POST.get('postal_code')
@@ -69,7 +68,6 @@ def UserProfile(request):
         user.last_name = last_name
         user.email = email
         user.gender = gender  
-        # user.password = password
         user.profile_pic = profile_pic
         user.postal_code = postal_code
         user.city = city
@@ -104,7 +102,6 @@ def update_product(request, product_id):
     print("------------------------>", product)
     print
     if request.method == 'POST':
-        print('================')
         name = request.POST.get('name')
         price = request.POST.get('price')
         description = request.POST.get('description')
@@ -131,13 +128,13 @@ def delete_product(request, product_id):
     return redirect('home')
 
 def add_to_cart(request, product_id):
+    print("add_to_cart view called")    
     product = Products.objects.get(id=product_id)
     cart_item, created = CartItems.objects.get_or_create(
         customer=request.user,  
         product=product,
         defaults={'quantity': 1},  
     )
-    
     if not created: 
         cart_item.quantity += 1
         cart_item.save()
@@ -145,6 +142,22 @@ def add_to_cart(request, product_id):
     return redirect('viewcart')
 
 def view_cart(request):
+    if request.method == 'POST':
+        required_items = request.POST.getlist('required_items') 
+
+        for item in CartItems.objects.filter(customer=request.user):
+            item.required_items = str(item.id) in required_items
+            quantity_key = f'quantity_{item.id}'  
+            if quantity_key in request.POST:
+                new_quantity = int(request.POST[quantity_key])
+                if new_quantity >= 1: 
+                    item.quantity = new_quantity
+                else:
+                    item.quantity = 1
+            item.save()
+
+        return redirect('viewcart')
+    
     cart_items = CartItems.objects.filter(customer=request.user) 
     return render(request, 'cart.html', context = {'cart_items': cart_items})
 
@@ -155,5 +168,7 @@ def delete_cartitem(request, product_id):
             item.delete()
         return redirect('viewcart')
 
+def Order(request):
+    return render(request, 'order.html')
 
 

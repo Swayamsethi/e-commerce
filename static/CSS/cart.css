@@ -62,3 +62,8 @@ a {
 a:hover {
     background-color: #0056b3;
 }
+
+button{
+    display: flex;
+    justify-content: center;
+}
