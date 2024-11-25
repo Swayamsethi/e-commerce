@@ -1,0 +1,50 @@
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="stylesheet" href="{% static 'orders.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+       
+    </style>
+</head>
+<body>
+
+    <h1>Order</h1>
+    <div style>
+        <div>
+            <h6>heading</h6>
+            <div>
+                <p></p>
+            </div>
+        </div>
+        <div>
+            <h6>heading</h6>
+            <div>
+                <p></p>
+            </div>
+        </div>
+
+        </div>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+            </tr>
+        
+    {% for item in cart_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }}</td>
+            </tr>
+            {% endfor %}
+    <p><strong>Total Price:</strong> {{ total_price }}</p>
+    <p><strong>Delivery Charges:</strong> {{ delivery_charges }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Checkout</button>
+    </form>
+
+</body>
+</html> {% endcomment %}

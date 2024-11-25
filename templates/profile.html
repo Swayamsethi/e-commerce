@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select,
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .profile-img-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-img-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        .edit-remove-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .edit-remove-buttons a {
+            background-color: red;
+            color: white;
+            padding: 23px 3px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .edit-remove-buttons a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>User Profile Form</h2>
+        <form action="{% url 'profile' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="profile-img-container">
+                {% if user.profile_pic %}
+                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture">
+                {% else %}
+                    <p>No profile picture available</p>
+                {% endif %}
+                    <div class="edit-remove-buttons">
+                        <label for="profile_pic">Update Profile Picture:</label>
+                        <input type="file" name="profile_pic" accept="image/*">
+                        {% if user.profile_pic %}
+                            <a href="{% url 'delete' %}">Remove</a>
+                        {% endif %}
+                    </div>  
+            </div>
+
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="firstName" value="{{ user.first_name }}" name="firstName" placeholder="Enter your first name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="lastName" value="{{ user.last_name }}" name="lastName" placeholder="Enter your last name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" value="{{ user.email }}" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" value="{{ user.city }}" name="city" placeholder="Enter your password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="postal_code">Postal Code</label>
+                <input type="text" id="postal_code" value="{{ user.postal_code }}" name="postal_code" placeholder="Enter your password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="2" {% if user.gender == 2 %}selected{% endif %}>Female</option>
+                    <option value="1" {% if user.gender == 1 %}selected{% endif %}>Male</option>
+                    <option value="3" {% if user.gender == 3 %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+
+            {% comment %} <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" value="{{ user.password }}" name="password" placeholder="Enter your password" required>
+            </div> {% endcomment %}
+
+            <input type="submit" value="Save Profile">
+        </form>
+    </div>
+
+</body>
+</html>

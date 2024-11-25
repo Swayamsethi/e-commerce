@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="stylesheet" href="{% static 'cart.css' %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+</head>
+<body>
+
+    <h1>Shopping Cart</h1>
+    <form method="POST" action="{% url 'viewcart' %}">
+        {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Required</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }}</td>
+                <td>{{ item.quantity}}</td>
+
+                <td>
+                    <input type="checkbox" 
+                           name="required_items" 
+                           {% if item.required_items %}checked{% endif %} 
+                          >
+                </td>
+                <td><form method="POST" action="{% url 'removeitem' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="delete">-</button>
+                </form></td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'home' %}">Add Product</a>
+    {% comment %} <a href="{% url 'order' %}">Place Order</a> {% endcomment %}
+</body>
+</html>
