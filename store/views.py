@@ -129,7 +129,11 @@ def delete_product(request, product_id):
     return redirect('home')
 
 def add_to_cart(request, product_id):
-    product = Product.objects.get(id=product_id)
+    try:
+        product = Product.objects.get(id=product_id)
+    except:
+        return HttpResponse("Product not Found")
+    
     cart_item, created = CartItems.objects.get_or_create(
         customer=request.user,  
         product=product,
@@ -168,12 +172,8 @@ def delete_cartitem(request, product_id):
             item.delete()
         return redirect('viewcart')
 
-def Order(request, product_id):
-    product = Product.objects.get(id=product_id)
-    cart_item, created = CartItems.objects.get(
-        customer=request.user,  
-        product=product
-    )
+def Order(request):
+   
     return render(request, 'order.html')
 
 
