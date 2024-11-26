@@ -1,13 +1,9 @@
 {% load static %}
-<!DOCTYPE html>
 <html lang="en">
     <link rel="stylesheet" href="{% static 'products.css' %}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Product</title>
-</head>
+
 <body>
+    {% show_messages %}
     <div class="container">
         <h1>Create a New Product</h1>
         <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">

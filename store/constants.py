@@ -4,6 +4,9 @@ USER_ROLE = (
     (2,"CUSTOMER"),
     (3,"SELLER")
 )
+ADMIN = 1
+CUSTOMER = 2
+SELLER = 3
 
 # Payment Options
 PAYMENT_OPTION =(
@@ -11,9 +14,10 @@ PAYMENT_OPTION =(
     (2,"ATM CARD"),
     (3,"NETBANKING"),
     (4,"WALLETS"),
-    (5,"CASH ON     "),
+    (5,"CASH_ON_DELIVERY"),
     (6,"GIFT CARDS")
 )
+CASH_ON_DELIVERY= 3
 
 # Order History
 ORDER_HISTORY_STATUS =(
@@ -21,6 +25,7 @@ ORDER_HISTORY_STATUS =(
     (2,"RETURNED"),
     (3,"REPLACED")
 )
+DELIVERED= 1
 
 
 # Payment Status
@@ -29,6 +34,7 @@ PAYMENT_STATUS =(
     (2,"PENDING"),
     (3,"FAILED")
 )
+PENDING= 2
 
 # Gender
 GENDER =(
@@ -40,5 +46,7 @@ GENDER =(
 # Order status
 ORDER_STATUS =(
     (1,"SUCESS"),
-    (2,"FAIL")
+    (2,"FAIL"),
+    (3,"PROCESSING")
 )
+PROCESSING=3

@@ -1,14 +1,9 @@
 {% load static %}
-<!DOCTYPE html>
 <html lang="en">
     <link rel="stylesheet" href="{% static 'cart.css' %}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
-</head>
-<body>
 
+<body>
+    {% show_messages %}
     <h1>Shopping Cart</h1>
     <form method="POST" action="{% url 'viewcart' %}">
         {% csrf_token %}
@@ -54,6 +49,6 @@
     </table>
     <button type="submit">Update Cart</button>
     <a href="{% url 'home' %}">Add Product</a>
-    {% comment %} <a href="{% url 'order' %}">Place Order</a> {% endcomment %}
+    {% comment %} <a href="{% url 'order' item.product.id %}">Place Order</a> {% endcomment %}
 </body>
 </html>

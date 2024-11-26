@@ -1,21 +1,10 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-    <link rel="stylesheet" href="{% static 'home.css' %}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
-</head>
+{% load custom_tags %}
+
+<link rel="stylesheet" href="{% static 'home.css' %}">
 <body>
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    
+    {% show_messages %}
+  
     <header>
         <h1>Myntra</h1>
         <div class="search-bar">

@@ -1,14 +1,10 @@
 {% load static %}
-<!DOCTYPE html>
+{% load custom_tags %}
 <html lang="en">
     <link rel="stylesheet" href="{% static 'profile.css' %}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile Form</title>
-</head>
-<body>
 
+<body>
+    {% show_messages %}
     <div class="container">
         <h2>User Profile Form</h2>
         <form action="{% url 'profile' %}" method="POST" enctype="multipart/form-data">
@@ -62,11 +58,6 @@
                     <option value="3" {% if user.gender == 3 %}selected{% endif %}>Other</option>
                 </select>
             </div>
-
-            {% comment %} <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" value="{{ user.password }}" name="password" placeholder="Enter your password" required>
-            </div> {% endcomment %}
 
             <input type="submit" value="Save Profile">
         </form>

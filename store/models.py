@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
 from django.utils.translation import gettext_lazy as _
-from .constants import USER_ROLE, PAYMENT_OPTION, ORDER_HISTORY_STATUS, PAYMENT_STATUS, GENDER, ORDER_STATUS
-
+from .constants import USER_ROLE, PAYMENT_OPTION, ORDER_HISTORY_STATUS, PAYMENT_STATUS, DELIVERED,GENDER,PROCESSING, ORDER_STATUS, PENDING, CASH_ON_DELIVERY
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
@@ -27,6 +26,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractUser): 
+    username = None
     email = models.EmailField(unique=True)
     first_name=models.CharField(max_length=39, null=True)
     last_name=models.CharField(max_length=92, null=True)
@@ -34,7 +34,6 @@ class User(AbstractUser):
     gender=models.IntegerField(null=True, choices=GENDER)
     mobile=models.IntegerField(default=0, null=True)
     address = models.CharField(max_length=255)
-    username = None
     profile_pic= models.ImageField(upload_to='profile_pic/', null=True, blank=True)
     city = models.CharField(max_length=100, null=True)
     postal_code = models.CharField(max_length=20, null=True)
@@ -50,7 +49,7 @@ class User(AbstractUser):
     objects=CustomUserManager()
 
 
-class Products(models.Model): 
+class Product(models.Model): 
     name = models.CharField(max_length=60) 
     price = models.DecimalField(default=0, decimal_places=2, max_digits=10) 
     description = models.CharField( max_length=250, default='', blank=True, null=True) 
@@ -59,58 +58,74 @@ class Products(models.Model):
     quantity = models.IntegerField(default=1) 
     created_by = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Product_table'
 
 class Wishlist(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE)
-    products = models.ForeignKey(Products, related_name='wishlists', on_delete=models.CASCADE, null=True, blank=True)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    products = models.ForeignKey(Product, related_name='wishlists', on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Wishlist_table'
 
 class CartItems(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE, null=True, blank=True) 
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True) 
     customer = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True) 
     required_items = models.BooleanField(default=False)
     quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Cart_table'
     
 class Order(models.Model):
-    product = models.ForeignKey(Products, 
-                                on_delete=models.CASCADE, null=True, blank=True) 
+    product = models.ForeignKey(Product, 
+                                on_delete=models.PROTECT, null=True, blank=True) 
     customer = models.ForeignKey(User, 
-                                 on_delete=models.CASCADE,null=True, blank=True) 
+                                 on_delete=models.PROTECT,null=True, blank=True) 
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    order_status = models.CharField(max_length=20, choices=ORDER_STATUS)
+    order_status = models.CharField(max_length=20, choices=ORDER_STATUS, default=PROCESSING)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Order_table'
 
 class Payment(models.Model):
     customer = models.ForeignKey(User, 
-                                 on_delete=models.CASCADE,null=True, blank=True) 
-    product = models.ForeignKey(Products, 
-                                on_delete=models.CASCADE, null=True, blank=True) 
+                                 on_delete=models.PROTECT,null=True, blank=True) 
+    product = models.ForeignKey(Product, 
+                                on_delete=models.PROTECT, null=True, blank=True) 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payment')
     transaction_id = models.CharField(max_length=100)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_OPTION)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_OPTION, default=CASH_ON_DELIVERY)
     delivery_charges = models.PositiveBigIntegerField()
-    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default=PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Payment_table'
 
 class OrderHistory(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
-    status = models.CharField(max_length=50,default=False, choices=ORDER_HISTORY_STATUS)
+    status = models.CharField(max_length=50, choices=ORDER_HISTORY_STATUS, default=DELIVERED)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Orderhistory_table'
 
 class Review(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='reviews', null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', null=True, blank=True)
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField()  
     comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Review_table'
 
 class Coupon(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     code = models.CharField(max_length=20, unique=True)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
-    is_active = models.BooleanField(default=True)
-    valid_from = models.DateTimeField()
-    valid_to = models.DateTimeField()
+    is_active = models.BooleanField(default=True, null=True)
+    valid_from = models.DateTimeField(null=True)
+    valid_to = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'Coupon_table'

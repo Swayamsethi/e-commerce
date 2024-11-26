@@ -1,13 +1,10 @@
 {% load static %}
-<!DOCTYPE html>
+{% load custom_tags %}
 <html lang="en">
     <link rel="stylesheet" href="{% static 'products.css' %}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Product</title>
-</head>
+
 <body>
+    {% show_messages %}
     <div class="container">
         <h1>Update Product</h1>
         <form action="{% url 'update' product.id %}" method="POST" enctype="multipart/form-data">

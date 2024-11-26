@@ -1,13 +1,9 @@
 {% load static %}
-<!DOCTYPE html>
+{% load custom_tags %}
 <html lang="en">
     <link rel="stylesheet" href="{% static 'auth.css' %}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-</head>
 <body>
+    {% show_messages %}
     <div class="container">
         <h2>Login</h2>
         <form action="{% url 'login' %}" method="POST">

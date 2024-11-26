@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
-from .models import User,Products,CartItems
+from django.http import HttpResponse
+from .models import User,Product,CartItems
 from django.contrib.auth.decorators import login_required
+from .constants import ADMIN, SELLER, CUSTOMER
 
 def register(request):
     if request.method == 'POST':
@@ -45,12 +47,13 @@ def logout(request):
 @login_required
 def home(request):
     user_role= request.user.user_role
-    if user_role == 2:
-        products= Products.objects.all()
-    elif user_role in [1,3]:
-        products= Products.objects.filter(created_by= request.user)
+    if user_role == CUSTOMER:
+        products= Product.objects.all()
+    elif user_role in [ADMIN,SELLER]:
+        products= Product.objects.filter(created_by= request.user)
     else:
         products= []
+    messages.success(request, "Welcome Home")
     return render(request, 'home.html', context = {'products': products})
 
 def UserProfile(request):
@@ -89,7 +92,7 @@ def create_product(request):
         description = request.POST.get('description')
         image = request.FILES.get('image')
         try:
-            Products.objects.create(name=name,price=price, description=description, image=image, created_by= request.user)
+            Product.objects.create(name=name,price=price, description=description, image=image, created_by= request.user)
             messages.success(request, "Product created successfully!")
             return redirect('home')
         except Exception as e:
@@ -98,15 +101,13 @@ def create_product(request):
 
 
 def update_product(request, product_id):
-    product = Products.objects.get(id=product_id)
-    print("------------------------>", product)
-    print
+    product = Product.objects.get(id=product_id)
+
     if request.method == 'POST':
         name = request.POST.get('name')
         price = request.POST.get('price')
         description = request.POST.get('description')
         image = request.FILES.get('image')
-        print("-----------name----------->", name)
 
         product.name = name
         product.price = price
@@ -121,15 +122,14 @@ def update_product(request, product_id):
     
 
 def delete_product(request, product_id):
-    product = Products.objects.get(id=product_id)
+    product = Product.objects.get(id=product_id)
     if request.method == 'POST':  
         product.delete()  
         messages.success(request, "Product deleted successfully!")
     return redirect('home')
 
 def add_to_cart(request, product_id):
-    print("add_to_cart view called")    
-    product = Products.objects.get(id=product_id)
+    product = Product.objects.get(id=product_id)
     cart_item, created = CartItems.objects.get_or_create(
         customer=request.user,  
         product=product,
@@ -168,7 +168,14 @@ def delete_cartitem(request, product_id):
             item.delete()
         return redirect('viewcart')
 
-def Order(request):
+def Order(request, product_id):
+    product = Product.objects.get(id=product_id)
+    cart_item, created = CartItems.objects.get(
+        customer=request.user,  
+        product=product
+    )
     return render(request, 'order.html')
+
+
 
 
