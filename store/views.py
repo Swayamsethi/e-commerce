@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import User,Product,CartItems
+from .models import User,Product,CartItems, Order
 from django.contrib.auth.decorators import login_required
-from .constants import ADMIN, SELLER, CUSTOMER
+from .constants import ADMIN, SELLER, CUSTOMER, PROCESSING
 
 def register(request):
     if request.method == 'POST':
@@ -133,11 +133,12 @@ def add_to_cart(request, product_id):
         product = Product.objects.get(id=product_id)
     except:
         return HttpResponse("Product not Found")
-    
+    required = request.POST.get('required', 'false') == 'true'
+
     cart_item, created = CartItems.objects.get_or_create(
         customer=request.user,  
         product=product,
-        defaults={'quantity': 1},  
+        defaults={'quantity': 1, 'required_items': required},  
     )
     if not created: 
         cart_item.quantity += 1
@@ -150,6 +151,8 @@ def view_cart(request):
         required_items = request.POST.getlist('required_items') 
 
         for item in CartItems.objects.filter(customer=request.user):
+
+            
             item.required_items = str(item.id) in required_items
             quantity_key = f'quantity_{item.id}'  
             if quantity_key in request.POST:
@@ -171,10 +174,20 @@ def delete_cartitem(request, product_id):
         if request.method == "POST":
             item.delete()
         return redirect('viewcart')
+    
 
-def Order(request):
-   
-    return render(request, 'order.html')
+def CartOrder(request):
+    required_items = CartItems.objects.filter(customer=request.user, required_items=True)
+    total_price = 0
+    for item in required_items:
+        item.total_item_price = item.product.price * item.quantity
+        total_price += item.total_item_price
+
+    context = {
+        'required_items': required_items,
+        'total_price': total_price,
+    }
+    return render(request, 'order.html', context)
 
 
 

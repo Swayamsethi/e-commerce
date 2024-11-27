@@ -48,8 +48,8 @@
             {% endfor %}
         </tbody>
     </table>
-    <button type="submit">Update Cart</button>
+    <button class="custom" type="submit">Update Cart</button>
     <a href="{% url 'home' %}">Add Product</a>
-    {% comment %} <a href="{% url 'order' item.product.id %}">Place Order</a> {% endcomment %}
+    <a href="{% url 'order' %}">Place Order</a>
 </body>
 </html>

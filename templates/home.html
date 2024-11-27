@@ -52,6 +52,7 @@
                     <div class="product-actions">
                         {% if request.user.user_role == 2%}
                         <a href="{% url 'cart' product.id %}" class="add-to-cart">Add to Cart</a>
+                        {% comment %} <a href="{% url 'buy'  product.id %}" class="add-to-cart">Buy Now</a> {% endcomment %}
                         {% endif %}
                         {% if request.user.user_role != 2%}
                         <form method="PUT" action="{% url 'update' product.id %}">

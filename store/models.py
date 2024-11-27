@@ -58,6 +58,7 @@ class Product(models.Model):
     quantity = models.IntegerField(default=1) 
     created_by = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
         db_table = 'Product_table'
 
