@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.http import HttpResponse
 from .models import User,Product,Order, Order
 from django.contrib.auth.decorators import login_required
-from .constants import ADMIN, SELLER, CUSTOMER, PROCESSING
+from .constants import ADMIN, SELLER, CUSTOMER
 
 def register(request):
     if request.method == 'POST':
@@ -135,7 +135,7 @@ def add_to_cart(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
     except:
-        return HttpResponse("Product not Found")
+        messages.error(request,"Product not found")
     required = request.POST.get('required', 'false') == 'true'
 
     cart_item, created = Order.objects.get_or_create(
@@ -183,7 +183,7 @@ def buy_now(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
-        return HttpResponse("Product not found")
+        messages.error(request,"Product not found")
     required = True  
     Order.objects.filter(customer=request.user).delete()
 
