@@ -1,0 +1,59 @@
+{% load static %}
+{% load custom_tags %}
+<html lang="en">
+    <link rel="stylesheet" href="{% static 'cart.css' %}">
+
+<body>
+    {% show_messages %}
+    <h1>Shopping Cart</h1>
+    <form method="POST" action="{% url 'viewcart' %}">
+        {% csrf_token %}
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Required</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }}</td>
+    
+                <td>
+                    <input type="number" 
+                           name="quantity_{{ item.id }}" 
+                           value="{{ item.quantity }}" 
+                           min="1" 
+                           step="1"
+                           {% if item.required_items %}checked{% endif %}>
+                </td>
+                <td>
+                    <input type="checkbox" 
+                           name="required_items" 
+                           value="{{ item.id }}" 
+                           {% if item.required_items %}checked{% endif %}>
+                </td>
+
+                <td><form method="POST" action="{% url 'removeitem' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="delete">-</button>
+                </form></td>
+                
+            </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No items in the cart</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button class="custom" type="submit">Update Cart</button>
+    <a href="{% url 'home' %}">Add Product</a>
+    <a href="{% url 'order' %}">Place Order</a>
+</body>
+</html>

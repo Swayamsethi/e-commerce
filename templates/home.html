@@ -1,0 +1,93 @@
+{% load static %}
+{% load custom_tags %}
+
+<link rel="stylesheet" href="{% static 'home.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<body>
+    {% show_messages %}
+  
+    <header>
+        <h1>Myntra</h1>
+        <div class="search-bar">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search products...">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <nav>
+            <ul>
+                <li class="nav-items">
+                    {% if user.is_authenticated %}
+                        {% comment %} <span class="username">Hello, {{ user.first_name }}</span> {% endcomment %}
+                        <div class="profile-dropdown">
+                            <a href="#" id="profile-button">Hello, {{ user.first_name }}</a>
+                            <div class="dropdown-content">
+                                <a href="{% url 'profile' %}">View Profile</a>
+                                <a href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'register' %}" id="register-button">Register</a>
+                        <a href="{% url 'login' %}" id="login-button">Login</a>
+                    {% endif %}
+                    {% if request.user.user_role == 2%}
+                    <a href="{% url 'viewcart' %}" class="cart">
+                        <img src="https://cdn-icons-png.flaticon.com/128/2331/2331970.png" alt="Cart">
+                        <span>Cart</span>
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Welcome to Myntra</h2>
+        <p>Find your favorite products at unbeatable prices!</p>
+
+        {% if request.user.user_role != 2 %}
+        <button><a href="{% url 'create' %}" id="create-button">Create</a></button>
+        {% endif %}
+
+        <!-- Displaying products -->
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    <img src="{% if product.image %}{{ product.image.url }}{% endif %}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>Rs.{{ product.price }}</p>
+                    <p>{{ product.description }}</p>
+                    <div class="product-actions">
+                        {% if request.user.user_role == 2%}
+                        <a href="{% url 'cart' product.id %}" class="add-to-cart">Add to Cart</a>
+                        <a href="{% url 'buynow'  product.id %}" class="add-to-cart">Buy Now</a>
+                        <td>
+                            <label class="heart-checkbox">
+                                <input type="checkbox" 
+                                       name="liked_items" 
+                                       value="{{ item.id }}" 
+                                       {% if item.liked_items %}checked{% endif %}>
+                                <i class="fas fa-heart"></i>
+                            </label>
+                        </td>
+                        {% endif %}
+                        {% if request.user.user_role != 2%}
+                        <form method="PUT" action="{% url 'update' product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="delete">Update</button>
+                        </form>
+                        <form method="POST" action="{% url 'delete' product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="delete">Delete</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p>No products available.</p>
+            {% endfor %}
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 MyOnlineStore. All rights reserved.</p>
+    </footer>
+</body>
+</html>

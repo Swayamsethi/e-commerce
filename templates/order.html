@@ -1,0 +1,39 @@
+{% load static %}
+{% load custom_tags %}
+<html lang="en">
+    <link rel="stylesheet" href="{% static 'cart.css' %}">
+<body>
+    {% show_messages %}
+    <h1>Order</h1>
+    <a href="{% url 'home' %}">Back</a>
+    <div style>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+    <tbody>
+
+    {% for item in required_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>Rs.{{ item.total_item_price}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><strong>Total Price:</strong> {{ total_price }}</p>
+   
+    <form method="post">
+        {% csrf_token %}
+        <button class="custom" type="submit">Checkout</button>
+    </form>
+
+</body>
+</html> 

@@ -1,0 +1,70 @@
+/* Cart */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #007bff;
+}
+
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+p {
+    text-align: center;
+    font-size: 18px;
+    margin: 20px;
+    color: #555;
+}
+
+a {
+    display: block;
+    width: 200px;
+    margin: 20px ;
+    padding: 12px;
+    text-align: center; 
+    text-decoration: none;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+a:hover {
+    background-color: #0056b3;
+}
+
+button{
+    display: flex;
+    justify-content: center;
+}
+

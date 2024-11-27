@@ -1,0 +1,42 @@
+{% load static %}
+{% load custom_tags %}
+<html lang="en">
+    <link rel="stylesheet" href="{% static 'products.css' %}">
+
+<body>
+    {% show_messages %}
+    <div class="container">
+        <h1>Create a New Product</h1>
+        <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="name">Product Name:</label>
+                <input type="text" id="name" name="name">
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Stock:</label>
+                <input type="number" id="stock" name="stock" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Product Image:</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+            </div>
+
+            <button type="submit">Create Product</button>
+        </form>
+    </div>
+</body>
+</html>
