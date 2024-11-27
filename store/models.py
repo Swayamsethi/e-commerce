@@ -53,7 +53,7 @@ class Product(models.Model):
     name = models.CharField(max_length=60) 
     price = models.DecimalField(default=0, decimal_places=2, max_digits=10) 
     description = models.CharField( max_length=250, default='', blank=True, null=True) 
-    stock=models.PositiveIntegerField(null=True,blank=True)
+    stock=models.PositiveIntegerField(null=True)
     image = models.ImageField(upload_to='product_img/', blank=True, null=True)
     quantity = models.IntegerField(default=1) 
     created_by = models.ForeignKey(User,on_delete=models.CASCADE, null=True)
@@ -69,23 +69,13 @@ class Wishlist(models.Model):
     class Meta:
         db_table = 'Wishlist_table'
 
-class CartItems(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True) 
-    customer = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True) 
+class Order(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, null=True, blank=True) 
+    customer = models.ForeignKey(User, on_delete=models.PROTECT,null=True, blank=True) 
     required_items = models.BooleanField(default=False)
     quantity = models.PositiveIntegerField(default=1)
-    created_at = models.DateTimeField(auto_now_add=True)
-    class Meta:
-        db_table = 'Cart_table'
-    
-class Order(models.Model):
-    product = models.ForeignKey(Product, 
-                                on_delete=models.PROTECT, null=True, blank=True) 
-    customer = models.ForeignKey(User, 
-                                 on_delete=models.PROTECT,null=True, blank=True) 
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     order_status = models.CharField(max_length=20, choices=ORDER_STATUS, default=PROCESSING)
-    created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'Order_table'
 

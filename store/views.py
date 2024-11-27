@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import User,Product,CartItems, Order
+from .models import User,Product,Order, Order
 from django.contrib.auth.decorators import login_required
 from .constants import ADMIN, SELLER, CUSTOMER, PROCESSING
 
@@ -90,9 +90,10 @@ def create_product(request):
         name = request.POST.get('name')
         price = request.POST.get('price')
         description = request.POST.get('description')
+        stock = request.POST.get('stock')
         image = request.FILES.get('image')
         try:
-            Product.objects.create(name=name,price=price, description=description, image=image, created_by= request.user)
+            Product.objects.create(name=name,price=price, description=description,stock=stock, image=image, created_by= request.user)
             messages.success(request, "Product created successfully!")
             return redirect('home')
         except Exception as e:
@@ -107,11 +108,13 @@ def update_product(request, product_id):
         name = request.POST.get('name')
         price = request.POST.get('price')
         description = request.POST.get('description')
+        stock = request.POST.get('stock')
         image = request.FILES.get('image')
 
         product.name = name
         product.price = price
         product.description = description
+        product.stock = stock
         product.image = image
 
         product.save() 
@@ -135,7 +138,7 @@ def add_to_cart(request, product_id):
         return HttpResponse("Product not Found")
     required = request.POST.get('required', 'false') == 'true'
 
-    cart_item, created = CartItems.objects.get_or_create(
+    cart_item, created = Order.objects.get_or_create(
         customer=request.user,  
         product=product,
         defaults={'quantity': 1, 'required_items': required},  
@@ -150,7 +153,7 @@ def view_cart(request):
     if request.method == 'POST':
         required_items = request.POST.getlist('required_items') 
 
-        for item in CartItems.objects.filter(customer=request.user):
+        for item in Order.objects.filter(customer=request.user):
 
             
             item.required_items = str(item.id) in required_items
@@ -165,19 +168,38 @@ def view_cart(request):
 
         return redirect('viewcart')
     
-    cart_items = CartItems.objects.filter(customer=request.user) 
+    cart_items = Order.objects.filter(customer=request.user) 
     return render(request, 'cart.html', context = {'cart_items': cart_items})
 
 def delete_cartitem(request, product_id):
-    item= CartItems.objects.get(id=product_id)
+    item= Order.objects.get(id=product_id)
     if item.customer == request.user:
         if request.method == "POST":
             item.delete()
         return redirect('viewcart')
     
 
-def CartOrder(request):
-    required_items = CartItems.objects.filter(customer=request.user, required_items=True)
+def buy_now(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return HttpResponse("Product not found")
+    required = True  
+    Order.objects.filter(customer=request.user).delete()
+
+    cart_item, created = Order.objects.get_or_create(
+        customer=request.user,
+        product=product,
+        defaults={'quantity': 1, 'required_items': required}
+    )
+    if not created: 
+        cart_item.quantity += 1
+        cart_item.save()
+    
+    return redirect('order')
+
+def Orders(request):
+    required_items = Order.objects.filter(customer=request.user, required_items=True)
     total_price = 0
     for item in required_items:
         item.total_item_price = item.product.price * item.quantity
@@ -188,7 +210,4 @@ def CartOrder(request):
         'total_price': total_price,
     }
     return render(request, 'order.html', context)
-
-
-
 

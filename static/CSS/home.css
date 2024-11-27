@@ -234,3 +234,73 @@ footer {
     padding: 10px 0;
     flex-shrink: 0;
 }
+
+/* Hide the actual checkbox */
+.heart-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+/* Style the heart icon to look like a checkbox */
+.heart-checkbox i {
+    font-size: 24px; /* You can adjust the size */
+    color: #ccc; /* Default color for unselected heart */
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+/* Change the color when the checkbox is checked */
+.heart-checkbox input[type="checkbox"]:checked + i {
+    color: red; /* Color for the checked state */
+}
+
+/* Optional: Add hover effect */
+.heart-checkbox i:hover {
+    color: #ff3366; /* Color when hovering over the heart */
+}
+
+/* Style for the profile dropdown container */
+.profile-dropdown {
+    position: relative;  /* Position the dropdown relative to the parent */
+    display: inline-block; /* Keep the dropdown inline with the text */
+}
+
+/* Style the profile button */
+#profile-button {
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px;
+    background-color: #080808;
+    border: 1px solid #080808;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* The dropdown menu (hidden by default) */
+.dropdown-content {
+    display: none;  /* Hide by default */
+    position: absolute;  /* Position it below the profile button */
+    background-color: #080808;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+/* Style the dropdown links */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Hover effect for the links */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Show the dropdown when the parent is hovered */
+.profile-dropdown:hover .dropdown-content {
+    display: block;
+}
+
